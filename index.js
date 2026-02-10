@@ -9,7 +9,7 @@ app.use(express.json());
 const EMAIL = "namrata0831.be23@chitkara.edu.in";
 
 // 🔴 PUT YOUR GEMINI KEY HERE
-const genAI = new GoogleGenerativeAI("AIzaSyCV-ThFH1SAdjWyrtRpeFUnChIllM25Au4");
+const genAI = new GoogleGenerativeAI("AIzaSyBpPOKofpOC9STyKlcR01PdkqKRR5TRL5A");
 
 
 // ================= HEALTH =================
