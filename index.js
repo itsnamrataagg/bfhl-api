@@ -95,7 +95,8 @@ app.post("/bfhl", async (req, res) => {
 
     // ================= AI =================
     if (body.AI !== undefined) {
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
 
       const result = await model.generateContent(body.AI);
       const text = result.response.text();
