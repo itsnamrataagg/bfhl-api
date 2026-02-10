@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const app = express();
 app.use(cors());
@@ -7,8 +8,11 @@ app.use(express.json());
 
 const EMAIL = "namrata0831.be23@chitkara.edu.in";
 
+// 🔴 PUT YOUR GEMINI KEY HERE
+const genAI = new GoogleGenerativeAI("AIzaSyCV-ThFH1SAdjWyrtRpeFUnChIllM25Au4");
 
-// ✅ Health
+
+// ================= HEALTH =================
 app.get("/health", (req, res) => {
   res.json({
     is_success: true,
@@ -17,16 +21,17 @@ app.get("/health", (req, res) => {
 });
 
 
-// Fibonacci
+// ================= UTILS =================
 function fibonacci(n) {
+  if (n <= 0) return [];
+  if (n === 1) return [0];
   const arr = [0, 1];
-  for (let i = 2; i <= n; i++) {
+  for (let i = 2; i < n; i++) {
     arr.push(arr[i - 1] + arr[i - 2]);
   }
-  return arr.slice(0, n);
+  return arr;
 }
 
-// Prime filter
 function primes(nums) {
   return nums.filter(num => {
     if (num < 2) return false;
@@ -37,21 +42,21 @@ function primes(nums) {
   });
 }
 
-// HCF
+function gcd(a, b) {
+  return b === 0 ? a : gcd(b, a % b);
+}
+
 function hcf(nums) {
-  const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
   return nums.reduce((a, b) => gcd(a, b));
 }
 
-// LCM
 function lcm(nums) {
-  const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
   const l = (a, b) => (a * b) / gcd(a, b);
   return nums.reduce((a, b) => l(a, b));
 }
 
 
-// ✅ Main API
+// ================= MAIN API =================
 app.post("/bfhl", async (req, res) => {
   try {
     const body = req.body;
@@ -88,11 +93,17 @@ app.post("/bfhl", async (req, res) => {
       });
     }
 
+    // ================= AI =================
     if (body.AI !== undefined) {
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+      const result = await model.generateContent(body.AI);
+      const text = result.response.text();
+
       return res.json({
         is_success: true,
         official_email: EMAIL,
-        data: "Mumbai"   // temporary safe answer
+        data: text.trim().split(" ")[0]
       });
     }
 
@@ -101,6 +112,7 @@ app.post("/bfhl", async (req, res) => {
     });
 
   } catch (err) {
+    console.log(err);
     return res.status(500).json({
       is_success: false
     });
